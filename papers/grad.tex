@@ -57,7 +57,7 @@ Let's compute the derivatives of all our models. Throughout the entire paper $n$
   \end{tikzpicture}
 \end{center}
 \begin{align}
-  y &= \sigma(xw_1 + yw_2 + b) \\
+  z &= \sigma(xw_1 + yw_2 + b) \\
   \sigma(x) &= \frac{1}{1 + e^{-x}} \\
   \sigma'(x) &= \sigma(x)(1 - \sigma(x))
 \end{align}
@@ -106,8 +106,8 @@ Let's compute the derivatives of all our models. Throughout the entire paper $n$
 
 \begin{align}
   a_i^{(1)} &= \sigma(x_iw^{(1)} + b^{(1)}) \\
-  \pd[w^{1}]a_1^{(i)} &= a_i^{(1)}(1 - a_i^{(1)})x_i \\
-  \pd[b^{1}]a_1^{(i)} &= a_i^{(1)}(1 - a_i^{(1)}) \\
+  \pd[w^{(1)}]a_i^{(1)} &= a_i^{(1)}(1 - a_i^{(1)})x_i \\
+  \pd[b^{1}]a_i^{(1)} &= a_i^{(1)}(1 - a_i^{(1)}) \\
   a_i^{(2)} &= \sigma(a_i^{(1)}w^{(2)} + b^{(2)}) \\
   \pd[w^{(2)}]a_i^{(2)} &= a_i^{(2)}(1 - a_i^{(2)})a_i^{(1)} \\
   \pd[b^{(2)}]a_i^{(2)} &= a_i^{(2)}(1 - a_i^{(2)}) \\
@@ -125,11 +125,11 @@ Let's compute the derivatives of all our models. Throughout the entire paper $n$
   \pd[b^{(2)}] C^{(2)} &= \avgsum[i, n] 2(a_i^{(2)} - y_i)a_i^{(2)}(1 - a_i^{(2)}) \\
   \pd[a_i^{(1)}]C^{(2)} &= \avgsum[i, n] 2(a_i^{(2)} - y_i)a_i^{(2)}(1 - a_i^{(2)})w^{(2)} \\
   e_i &= a_i^{(1)} - \pd[a_i^{(1)}]C^{(2)} \\
-  C^{(1)} &= \avgsum[i, n] (a_1^{(i)} - e_i)^2 \\
-  \pd[w^{1}]C^{(1)}
-            &= \pd[w^{1}]\left(\avgsum[i, n] (a_1^{(i)} - e_i)^2\right) =\\
-            &= \avgsum[i, n] \pd[w^{1}]\left((a_1^{(i)} - e_i)^2\right) =\\
-            &= \avgsum[i, n] 2(a_1^{(i)} - e_i)\pd[w^{1}]a_1^{(i)} =\\
+  C^{(1)} &= \avgsum[i, n] (a_i^{(1)} - e_i)^2 \\
+  \pd[w^{(1)}]C^{(1)}
+            &= \pd[w^{(1)}]\left(\avgsum[i, n] (a_i^{(1)} - e_i)^2\right) =\\
+            &= \avgsum[i, n] \pd[w^{(1)}]\left((a_i^{(1)} - e_i)^2\right) =\\
+            &= \avgsum[i, n] 2(a_i^{(1)} - e_i)\pd[w^{(1)}]a_i^{(1)} =\\
             &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})x_i \\
   \pd[b^{1}]C^{(1)} &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})
 \end{align}
