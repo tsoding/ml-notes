@@ -132,8 +132,8 @@ The superscript in parenthesis denotes the current layer. For example $a_i^{(l)}
             &= \pd[w^{(1)}]\left(\avgsum[i, n] (a_i^{(1)} - e_i)^2\right) =\\
             &= \avgsum[i, n] \pd[w^{(1)}]\left((a_i^{(1)} - e_i)^2\right) =\\
             &= \avgsum[i, n] 2(a_i^{(1)} - e_i)\pd[w^{(1)}]a_i^{(1)} =\\
-            &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})x_i \\
-  \pd[b^{1}]C^{(1)} &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})
+            &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})a_i^{(1)}(1 - a_i^{(1)})x_i \\
+  \pd[b^{1}]C^{(1)} &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})a_i^{(1)}(1 - a_i^{(1)})
 \end{align}
 
 \subsection{Arbitrary Neurons Model with 1 input}
