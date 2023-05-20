@@ -118,23 +118,61 @@ The superscript in parenthesis denotes the current layer. For example $a_i^{(l)}
 
 \subsubsection{Back-Propagation}
 
+We observe that $a_i^{(2)}$ is dependent only on $a_i^{(1)}$ and not on any of the other $a_j^{(2)}$'s ($i \neq j$), since they represent different samples.
+
 \begin{align}
-  C^{(2)} &= \avgsum[i, n] (a_i^{(2)} - y_i)^2 \\
-  \pd[w^{(2)}] C^{(2)}
-            &= \avgsum[i, n] \pd[w^{(2)}]((a_i^{(2)} - y_i)^2) = \\
-            &= \avgsum[i, n] 2(a_i^{(2)} - y_i)\pd[w^{(2)}]a_i^{(2)} = \\
-            &= \avgsum[i, n] 2(a_i^{(2)} - y_i)a_i^{(2)}(1 - a_i^{(2)})a_i^{(1)} \\
-  \pd[b^{(2)}] C^{(2)} &= \avgsum[i, n] 2(a_i^{(2)} - y_i)a_i^{(2)}(1 - a_i^{(2)}) \\
-  \pd[a_i^{(1)}]C^{(2)} &= \avgsum[i, n] 2(a_i^{(2)} - y_i)a_i^{(2)}(1 - a_i^{(2)})w^{(2)} \\
-  e_i &= a_i^{(1)} - \pd[a_i^{(1)}]C^{(2)} \\
-  C^{(1)} &= \avgsum[i, n] (a_i^{(1)} - e_i)^2 \\
-  \pd[w^{(1)}]C^{(1)}
-            &= \pd[w^{(1)}]\left(\avgsum[i, n] (a_i^{(1)} - e_i)^2\right) =\\
-            &= \avgsum[i, n] \pd[w^{(1)}]\left((a_i^{(1)} - e_i)^2\right) =\\
-            &= \avgsum[i, n] 2(a_i^{(1)} - e_i)\pd[w^{(1)}]a_i^{(1)} =\\
-            &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})a_i^{(1)}(1 - a_i^{(1)})x_i \\
-  \pd[b^{1}]C^{(1)} &= \avgsum[i, n] 2(\pd[a_i^{(1)}]C^{(2)})a_i^{(1)}(1 - a_i^{(1)})
+  C &= \avgsum[i, n] (a_i^{(2)} - y_i)^2 \\
+  \pd[a_i^{(2)}] C
+          &= \pd[a_i^{(2)}] \left( \avgsum[j, n] (a_j^{(2)} - y_j)^2 \right) = \\
+          &= \frac{1}{n} \pd[a_i^{(2)}] ((a_i^{(2)} - y_i)^2) = \\
+          &= \frac{1}{n} \cdot 2(a_i^{(2)} - y_i)\\
+  \pd[a_i^{(1)}] C
+          &= \pd[a_i^{(2)}] C \cdot \pd[a_i^{(1)}] a_i^{(2)} = \\
+          &= \frac{1}{n} \cdot 2(a_i^{(2)} - y_i) a_i^{(2)}(1 - a_i^{(2)})w^{(2)}
 \end{align}
+
+To evaluate the desired gradients, the chain rule for partial differentiation must be repeatedly applied to peel off the surrounding layers. Repetition can be minimized by re-using the results from the above calculation and from the previous section.
+
+\begin{align}
+  \pd[w^{(2)}] C
+          &= \avgsum[i, n] \pd[a_i^{(2)}] C \cdot \pd[w^{(2)}] a_i^{(2)} = \\
+          &= \avgsum[i, n] 2(a_i^{(2)} - y_i)a_i^{(2)}(1 - a_i^{(2)})a_i^{(1)}\\
+  \pd[b^{(2)}] C
+          &= \avgsum[i, n] \pd[a_i^{(2)}] C \cdot \pd[b^{(2)}] a_i^{(2)} = \\
+          &= \avgsum[i, n] 2(a_i^{(2)} - y_i)a_i^{(2)}(1 - a_i^{(2)})\\
+  \pd[w^{(1)}] C
+            &= \sum_{i=1}^n \pd[a_i^{(1)}] C \cdot \pd[w^{(1)}] a_i^{(1)} = \\
+            &= \sum_{i=1}^n \pd[a_i^{(1)}] C \cdot a_i^{(1)}(1 - a_i^{(1)})x_i \\
+  \pd[b^{(1)}] C
+            &= \sum_{i=1}^n \pd[a_i^{(1)}] C \cdot \pd[b^{(1)}] a_i^{(1)} = \\
+            &= \sum_{i=1}^n \pd[a_i^{(1)}] C \cdot a_i^{(1)}(1 - a_i^{(1)})
+\end{align}
+
+As a visual aid, the following diagram depicts the dependencies between variables.
+
+\begin{center}
+  \begin{tikzpicture}
+    \node (X) at (-{1.5*\d}, 0) {$x$};
+    \node[shape=circle,draw=black] (A1) at (0, 0) {$a_i^{(1)}$};
+    \node (W1) at (0, \d) {$w^{(1)}$};
+    \node (B1) at (0, -\d) {$b^{(1)}$};
+    \node[shape=circle,draw=black] (A2) at ({1.5*\d}, 0) {$a_i^{(2)}$};
+    \node (W2) at ({1.5*\d}, \d) {$w^{(2)}$};
+    \node (B2) at ({1.5*\d}, -\d) {$b^{(2)}$};
+    \node (C) at ({3*\d}, 0) {$C$};
+    \node (Y) at ({3*\d}, -\d) {$y$};
+    \path[->] (X) edge (A1);
+    \path[->] (W1) edge node[left] {$\pd[w^{(1)}] a_i^{(1)}$} (A1);
+    \path[->] (B1) edge node[left] {$\pd[b^{(1)}] a_i^{(1)}$} (A1);
+    \path[->] (A1) edge node[above] {$\pd[a_i^{(1)}] a_i^{(2)}$} (A2);
+    \path[->] (W2) edge node[right] {$\pd[w^{(2)}] a_i^{(2)}$} (A2);
+    \path[->] (B2) edge node[right] {$\pd[b^{(2)}] a_i^{(2)}$} (A2);
+    \path[->] (A2) edge node[above] {$\pd[a_i^{(2)}] C$} (C);
+    \path[->] (Y) edge (C);
+  \end{tikzpicture}
+\end{center}
+
+Differentiating $C$ by a variable amounts to multiplying all the partial differential coefficients encountered along the path from that variable to $C$. Paths through different $i$'s can be thought of as parallel, products along which are to be summed at the end.
 
 \subsection{Arbitrary Neurons Model with 1 input}
 
@@ -151,15 +189,20 @@ Let's assume that $a_i^{(0)}$ is $x_i$.
   \pd[a_i^{(l-1)}]a_i^{(l)} &= a_i^{(l)}(1 - a_i^{(l)})w^{(l)}
 \end{align}
 
-\subsubsection{Back-Propagation}
-
-Let's denote $a_i^{(m)} - y_i$ as $\pd[a_i^{(m)}]C^{(m+1)}$.
+\subsubsection{Back-Propagation: a conventional approach}
 
 \begin{align}
-  C^{(l)} &= \avgsum[i, n] (\pd[a_i^{(l)}]C^{(l+1)})^2 \\
-  \pd[w^{(l)}]C^{(l)} &= \avgsum[i, n] 2(\pd[a_i^{(l)}]C^{(l+1)})a_i^{(l)}(1 - a_i^{(l)})a_i^{(l-1)} =\\
-  \pd[b^{(l)}]C^{(l)} &= \avgsum[i, n] 2(\pd[a_i^{(l)}]C^{(l+1)})a_i^{(l)}(1 - a_i^{(l)}) \\
-  \pd[a_i^{(l-1)}]C^{(l)} &= \avgsum[i, n] 2(\pd[a_i^{(l)}]C^{(l+1)})a_i^{(l)}(1 - a_i^{(l)})w^{(l)}
+  C &= \avgsum[i, n] (a_i^m - y_i)^2 \\
+  \pd[a_i^{(m)}] C &= \frac{1}{n} \cdot 2(a_i^{(m)} - y_i) \\
+  \pd[w^{(l)}] C
+        &= \sum_{i=1}^n \pd[a_i^{(l)}] C \cdot \pd[w^{(l)}] a_i^{(l)} = \\
+        &= \sum_{i=1}^n \pd[a_i^{(l)}] C \cdot a_i^{(l)}(1 - a_i^{(l)})a_i^{(l-1)} \\
+  \pd[b^{(l)}] C
+        &= \sum_{i=1}^n \pd[a_i^{(l)}] C \cdot \pd[b^{(l)}] a_i^{(l)} = \\
+        &= \sum_{i=1}^n \pd[a_i^{(l)}] C \cdot a_i^{(l)}(1 - a_i^{(l)}) \\
+  \pd[a_i^{(l-1)}] C
+        &= \pd[a_i^{(l)}] C \cdot \pd[a_i^{(1-1)}] a_i^{(l)} \\
+        &= \pd[a_i^{(l)}] C \cdot a_i^{(l)}(1 - a_i^{(l)})w^{(l)}
 \end{align}
 
 \end{document}
